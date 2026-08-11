@@ -4,8 +4,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    database_url: str = "postgresql+psycopg2://postgres:devpassword@localhost:5432/dosmart"
-    test_database_url: str = "postgresql+psycopg2://postgres:devpassword@localhost:5432/dosmart_test"
+    database_url: str = "sqlite:///./dev.db"
+    test_database_url: str = "sqlite:///./test.db"
 
     jwt_secret_key: str = "change-this-to-a-long-random-string"
     jwt_algorithm: str = "HS256"

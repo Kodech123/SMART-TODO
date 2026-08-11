@@ -4,7 +4,7 @@ Smart To-Do List with automatic task prioritization and an intelligent reminder 
 
 ## Stack
 
-- **Backend:** FastAPI + PostgreSQL 15 + SQLAlchemy 2.0 + APScheduler + JWT auth
+- **Backend:** FastAPI + SQLite + SQLAlchemy 2.0 + APScheduler + JWT auth
 - **Frontend:** React 18 + Redux Toolkit + Material-UI, built with Vite
 
 ## Repo layout
@@ -23,10 +23,7 @@ See `backend/README.md` and `frontend/README.md` for stack-specific setup instru
 Quick start:
 
 ```bash
-# 1. Postgres (Docker)
-docker compose up -d
-
-# 2. Backend
+# 1. Backend
 cd backend
 python -m venv venv && source venv/Scripts/activate
 pip install -r requirements.txt -r requirements-dev.txt
@@ -34,7 +31,7 @@ cp .env.example .env
 alembic upgrade head
 uvicorn app.main:app --reload --port 8000
 
-# 3. Frontend
+# 2. Frontend
 cd frontend
 npm install
 cp .env.example .env

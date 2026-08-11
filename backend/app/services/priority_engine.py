@@ -10,9 +10,9 @@ WEIGHTS = {
 
 
 def ensure_utc(dt: datetime) -> datetime:
-    """Some DB backends (e.g. SQLite, used as a temporary local fallback) don't
-    preserve tzinfo on round-trip; every datetime this app writes is UTC, so a
-    naive value read back can be safely assumed UTC rather than compared naively.
+    """SQLite doesn't preserve tzinfo on round-trip; every datetime this app writes
+    is UTC, so a naive value read back can be safely assumed UTC rather than
+    compared naively.
     """
     return dt if dt.tzinfo is not None else dt.replace(tzinfo=timezone.utc)
 

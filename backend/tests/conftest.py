@@ -6,9 +6,7 @@ load_dotenv()  # picks up TEST_DATABASE_URL from backend/.env, same precedence a
 
 # Point the app at the test database *before* app.core.config is imported anywhere,
 # so the module-level SQLAlchemy engine and the APScheduler jobstore both bind to it.
-os.environ["DATABASE_URL"] = os.environ.get(
-    "TEST_DATABASE_URL", "postgresql+psycopg2://postgres:devpassword@localhost:5432/dosmart_test"
-)
+os.environ["DATABASE_URL"] = os.environ.get("TEST_DATABASE_URL", "sqlite:///./test.db")
 os.environ["NOTIFICATION_TRANSPORT"] = "log"
 
 import pytest  # noqa: E402

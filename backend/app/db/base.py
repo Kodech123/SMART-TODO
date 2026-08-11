@@ -1,0 +1,9 @@
+from sqlalchemy.orm import DeclarativeBase
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+# Import all models here so Alembic's autogenerate can discover them via Base.metadata.
+from app.models import category, push_subscription, reminder, task, user  # noqa: E402,F401

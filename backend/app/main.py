@@ -20,6 +20,11 @@ app = FastAPI(title="DoSmart API", version="0.1.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
+    # Vite picks the next free port (5174, 5175, ...) whenever 5173 is already taken by
+    # another dev server, so a fixed allowlist of ports constantly falls out of date in
+    # local dev. This regex covers any localhost/127.0.0.1 port; it never matches a real
+    # production domain, so allow_origins above is still what governs non-local deploys.
+    allow_origin_regex=r"^http://(localhost|127\.0\.0\.1):\d+$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

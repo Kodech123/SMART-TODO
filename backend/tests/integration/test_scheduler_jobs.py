@@ -1,6 +1,29 @@
 from app.scheduler.jobs import deliver_reminder, rescore_active_tasks
 
 
+def test_list_pending_reminders_includes_time_until_delivery(client, auth_headers):
+    task = client.post(
+        "/api/v1/tasks",
+        headers=auth_headers,
+        json={
+            "title": "Task with a pending reminder",
+            "due_date": "in 5 days",
+            "importance_level": 3,
+            "estimated_effort": 3,
+            "enable_reminder": True,
+        },
+    ).json()
+    reminder_id = task["reminder"]["reminder_id"]
+
+    # Default status filter is "pending" -- the only status that formats time_until_delivery,
+    # which requires comparing the DB-round-tripped trigger_time against datetime.now().
+    response = client.get("/api/v1/reminders", headers=auth_headers)
+
+    assert response.status_code == 200
+    entry = next(r for r in response.json()["reminders"] if r["reminder_id"] == reminder_id)
+    assert entry["time_until_delivery"] is not None
+
+
 def test_deliver_reminder_marks_pending_reminder_delivered(client, auth_headers):
     task = client.post(
         "/api/v1/tasks",

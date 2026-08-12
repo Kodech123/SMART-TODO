@@ -9,6 +9,7 @@ from app.models.reminder import Reminder
 from app.models.task import Task
 from app.models.user import User
 from app.schemas.reminder import ReminderListItem, ReminderListResponse, SnoozeResponse
+from app.services.priority_engine import ensure_utc
 from app.services.reminder_service import snooze_reminder
 
 router = APIRouter(prefix="/api/v1/reminders", tags=["reminders"])
@@ -17,7 +18,7 @@ _ALLOWED_SNOOZE_MINUTES = {15, 30, 60, 120}
 
 
 def _format_time_until(trigger_time: datetime) -> str:
-    delta = trigger_time - datetime.now(timezone.utc)
+    delta = ensure_utc(trigger_time) - datetime.now(timezone.utc)
     if delta.total_seconds() <= 0:
         return "due now"
     hours, remainder = divmod(int(delta.total_seconds()), 3600)

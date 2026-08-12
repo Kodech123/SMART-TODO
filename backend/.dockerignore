@@ -1,0 +1,15 @@
+venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+.env
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+*.log
+pip_install.log
+tests/

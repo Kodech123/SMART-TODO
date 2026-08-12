@@ -19,7 +19,11 @@ export function usePushSubscription() {
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
         throw new Error('Push notifications are not supported in this browser')
       }
-      const registration = await navigator.serviceWorker.register('/service-worker.js')
+      await navigator.serviceWorker.register('/service-worker.js')
+      // register() resolves once the service worker is queued, not once it's active --
+      // pushManager.subscribe() requires an active worker, so wait for that specifically
+      // (matters most on a first-ever visit, before any service worker has installed yet).
+      const registration = await navigator.serviceWorker.ready
       const permission = await Notification.requestPermission()
       if (permission !== 'granted') {
         throw new Error('Notification permission denied')

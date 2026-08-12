@@ -2,8 +2,8 @@ self.addEventListener('push', (event) => {
   const data = event.data ? event.data.json() : {}
   const options = {
     body: data.body,
-    icon: data.icon || '/icon-192x192.png',
-    badge: data.badge || '/badge-72x72.png',
+    icon: data.icon || '/favicon.svg',
+    badge: data.badge || '/favicon.svg',
     data: data.data || {},
     tag: data.data?.task_id ? `task-${data.data.task_id}` : undefined,
     requireInteraction: false,

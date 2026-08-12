@@ -14,7 +14,7 @@ describe('register -> login -> create task -> complete task', () => {
     cy.url().should('include', '/dashboard')
 
     // Create a task and see its computed priority
-    cy.get('[data-testid=nav-tasks]').click()
+    cy.get('[data-testid=nav-tasks]:visible').click()
     cy.url().should('include', '/tasks')
 
     cy.get('[data-testid=add-task-btn]').click()
@@ -47,7 +47,7 @@ describe('register -> login -> create task -> complete task', () => {
     cy.get('[data-testid=login-btn]').click()
     cy.url().should('include', '/dashboard')
 
-    cy.get('[data-testid=nav-tasks]').click()
+    cy.get('[data-testid=nav-tasks]:visible').click()
     cy.contains('button', 'Completed').click()
     cy.contains(taskTitle).should('be.visible')
   })

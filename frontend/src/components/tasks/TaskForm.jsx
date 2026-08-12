@@ -10,6 +10,8 @@ import {
   Switch,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -29,6 +31,8 @@ const DEFAULT_VALUES = {
 
 export default function TaskForm() {
   const dispatch = useDispatch()
+  const theme = useTheme()
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'))
   const open = useSelector((state) => state.ui.showTaskForm)
   const editingTaskId = useSelector((state) => state.ui.editingTaskId)
   const categories = useSelector((state) => state.categories.items)
@@ -74,7 +78,7 @@ export default function TaskForm() {
   }
 
   return (
-    <Dialog open={open} onClose={() => dispatch(closeTaskForm())} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={() => dispatch(closeTaskForm())} fullWidth maxWidth="sm" fullScreen={fullScreen}>
       <DialogTitle>{editingTask ? 'Edit task' : 'New task'}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>

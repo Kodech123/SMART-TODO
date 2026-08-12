@@ -1,8 +1,10 @@
 import LogoutIcon from '@mui/icons-material/Logout'
+import MenuIcon from '@mui/icons-material/Menu'
 import { AppBar, Avatar, Box, IconButton, Toolbar, Tooltip, Typography } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { logout } from '../../features/auth/authSlice'
+import { toggleMobileNav } from '../../features/ui/uiSlice'
 
 export default function Header() {
   const dispatch = useDispatch()
@@ -15,8 +17,21 @@ export default function Header() {
   }
 
   return (
-    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    <AppBar
+      position="fixed"
+      elevation={0}
+      sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, borderBottom: '1px solid', borderColor: 'divider' }}
+    >
       <Toolbar>
+        <IconButton
+          color="inherit"
+          edge="start"
+          onClick={() => dispatch(toggleMobileNav())}
+          data-testid="open-nav-btn"
+          sx={{ mr: 1.5, display: { md: 'none' } }}
+        >
+          <MenuIcon />
+        </IconButton>
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontWeight: 700 }}>
           DoSmart
         </Typography>

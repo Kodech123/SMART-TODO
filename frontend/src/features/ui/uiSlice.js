@@ -6,6 +6,7 @@ const uiSlice = createSlice({
     showTaskForm: false,
     editingTaskId: null,
     toastMessage: null,
+    mobileNavOpen: false,
   },
   reducers: {
     openTaskForm(state, action) {
@@ -22,8 +23,15 @@ const uiSlice = createSlice({
     clearToast(state) {
       state.toastMessage = null
     },
+    toggleMobileNav(state) {
+      state.mobileNavOpen = !state.mobileNavOpen
+    },
+    closeMobileNav(state) {
+      state.mobileNavOpen = false
+    },
   },
 })
 
-export const { openTaskForm, closeTaskForm, showToast, clearToast } = uiSlice.actions
+export const { openTaskForm, closeTaskForm, showToast, clearToast, toggleMobileNav, closeMobileNav } =
+  uiSlice.actions
 export default uiSlice.reducer

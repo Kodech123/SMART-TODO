@@ -9,6 +9,8 @@ import {
   LinearProgress,
   Stack,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { useDispatch, useSelector } from 'react-redux'
@@ -25,6 +27,8 @@ const SCORE_ROWS = [
 
 export default function TaskDetail() {
   const dispatch = useDispatch()
+  const theme = useTheme()
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'))
   const task = useSelector((state) => state.tasks.selectedTask)
 
   if (!task) return null
@@ -32,7 +36,13 @@ export default function TaskDetail() {
   const { scores } = task
 
   return (
-    <Dialog open={Boolean(task)} onClose={() => dispatch(clearSelectedTask())} fullWidth maxWidth="sm">
+    <Dialog
+      open={Boolean(task)}
+      onClose={() => dispatch(clearSelectedTask())}
+      fullWidth
+      maxWidth="sm"
+      fullScreen={fullScreen}
+    >
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span>{task.title}</span>
         <IconButton onClick={() => dispatch(clearSelectedTask())} data-testid="close-task-detail">

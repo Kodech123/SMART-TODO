@@ -25,8 +25,8 @@ export default function LoginForm() {
   }
 
   return (
-    <Container maxWidth="xs" sx={{ mt: 10 }}>
-      <Paper elevation={2} sx={{ p: 4 }}>
+    <Container maxWidth="xs" sx={{ mt: { xs: 4, sm: 10 }, px: { xs: 2, sm: 3 } }}>
+      <Paper elevation={2} sx={{ p: { xs: 3, sm: 4 } }}>
         <Typography variant="h5" fontWeight={700} gutterBottom>
           Welcome back
         </Typography>

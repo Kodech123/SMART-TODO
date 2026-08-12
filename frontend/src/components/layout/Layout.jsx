@@ -13,7 +13,10 @@ export default function Layout() {
     <Box sx={{ display: 'flex' }}>
       <Header />
       <Sidebar />
-      <Box component="main" sx={{ flexGrow: 1, bgcolor: 'background.default', minHeight: '100vh', p: 3 }}>
+      <Box
+        component="main"
+        sx={{ flexGrow: 1, minWidth: 0, bgcolor: 'background.default', minHeight: '100vh', p: { xs: 2, sm: 3 } }}
+      >
         <Toolbar />
         <Outlet />
       </Box>

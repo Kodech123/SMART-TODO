@@ -1,0 +1,6 @@
+# API reference material
+
+- **`openapi.json`** — the live OpenAPI 3 spec exported from a running backend (`curl http://localhost:8000/openapi.json`). Also browsable interactively at `http://localhost:8000/docs` (Swagger UI) or `/redoc` while the backend is running.
+- **`DoSmart.postman_collection.json`** — importable into Postman or Insomnia. Run **Auth → Register** (or **Login**) first; its test script saves the JWT into the `access_token` collection variable automatically, so every other request picks it up via the collection-level bearer auth. **Tasks → Create Task** and **Categories → Create Category** likewise save `task_id`/`category_id` for the requests that need them.
+
+Every request in the collection was run against a live local backend on 2026-08-12 to confirm the example payloads are correct, not just plausible-looking. That pass caught a real bug: `GET /api/v1/reminders` (default `status=pending`) threw a 500 because of a naive/aware datetime mismatch — SQLite doesn't preserve timezone info on round-trip, and `_format_time_until` wasn't normalizing it like the rest of the codebase does. Fixed in `backend/app/routers/reminders.py`, with a regression test added (`test_list_pending_reminders_includes_time_until_delivery`) since no existing test exercised the default pending-status path.

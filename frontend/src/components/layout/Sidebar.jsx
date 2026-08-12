@@ -34,6 +34,7 @@ export default function Sidebar() {
             key={item.path}
             selected={location.pathname.startsWith(item.path)}
             onClick={() => navigate(item.path)}
+            data-testid={`nav-${item.path.slice(1)}`}
           >
             <ListItemIcon>{item.icon}</ListItemIcon>
             <ListItemText primary={item.label} />

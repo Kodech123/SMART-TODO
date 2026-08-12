@@ -35,7 +35,7 @@ export default function TaskDetail() {
     <Dialog open={Boolean(task)} onClose={() => dispatch(clearSelectedTask())} fullWidth maxWidth="sm">
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span>{task.title}</span>
-        <IconButton onClick={() => dispatch(clearSelectedTask())}>
+        <IconButton onClick={() => dispatch(clearSelectedTask())} data-testid="close-task-detail">
           <CloseIcon />
         </IconButton>
       </DialogTitle>

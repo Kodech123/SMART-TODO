@@ -44,6 +44,7 @@ export default function RegisterForm() {
             label="Display name"
             fullWidth
             margin="normal"
+            inputProps={{ 'data-testid': 'display-name-input' }}
             error={Boolean(errors.displayName)}
             helperText={errors.displayName?.message}
             {...register('displayName', { required: 'Display name is required' })}
@@ -53,6 +54,7 @@ export default function RegisterForm() {
             type="email"
             fullWidth
             margin="normal"
+            inputProps={{ 'data-testid': 'email-input' }}
             error={Boolean(errors.email)}
             helperText={errors.email?.message}
             {...register('email', { required: 'Email is required' })}
@@ -62,6 +64,7 @@ export default function RegisterForm() {
             type="password"
             fullWidth
             margin="normal"
+            inputProps={{ 'data-testid': 'password-input' }}
             error={Boolean(errors.password)}
             helperText={errors.password?.message ?? 'At least 8 characters'}
             {...register('password', {
@@ -69,7 +72,15 @@ export default function RegisterForm() {
               minLength: { value: 8, message: 'Password must be at least 8 characters' },
             })}
           />
-          <Button type="submit" variant="contained" fullWidth size="large" sx={{ mt: 3 }} disabled={isLoading}>
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            size="large"
+            sx={{ mt: 3 }}
+            disabled={isLoading}
+            data-testid="register-btn"
+          >
             Sign up
           </Button>
         </Box>

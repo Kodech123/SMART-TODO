@@ -40,3 +40,33 @@ npm run dev
 
 Backend API docs: http://localhost:8000/docs
 Frontend: http://localhost:5173
+
+## Testing
+
+```bash
+# Backend unit/integration tests
+cd backend && pytest
+
+# Frontend unit tests
+cd frontend && npm test
+
+# Frontend E2E tests (needs the backend on :8000 and frontend on :5173 already running)
+cd frontend && npm run cy:open   # interactive
+cd frontend && npm run cy:run    # headless
+```
+
+## Deployment
+
+The backend runs in Docker via Gunicorn with Uvicorn workers; the SQLite database file is
+kept in a named volume (`dosmart_data`) so it survives container restarts/rebuilds.
+
+```bash
+docker compose up -d --build
+```
+
+This builds `backend/Dockerfile`, runs `alembic upgrade head` on startup, then serves the
+API on http://localhost:8000. Before deploying anywhere but your own machine, override
+`JWT_SECRET_KEY` in `backend/.env` — the checked-in value is a dev-only placeholder.
+
+The frontend is a static Vite build (`npm run build` → `frontend/dist/`) meant to be served
+by a static host or reverse proxy; it isn't containerized yet.

@@ -35,7 +35,12 @@ export default function TaskCard({ task, onClick }) {
       }}
     >
       <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 1, '&:last-child': { pb: 2 } }}>
-        <Checkbox checked={isCompleted} onClick={handleComplete} disabled={isCompleted} />
+        <Checkbox
+          checked={isCompleted}
+          onClick={handleComplete}
+          disabled={isCompleted}
+          data-testid="task-checkbox"
+        />
         <Box sx={{ flexGrow: 1, minWidth: 0 }}>
           <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
             <Chip

@@ -30,7 +30,7 @@ export default function Header() {
             {user?.display_name?.[0]?.toUpperCase() ?? '?'}
           </Avatar>
           <Tooltip title="Log out">
-            <IconButton color="inherit" onClick={handleLogout}>
+            <IconButton color="inherit" onClick={handleLogout} data-testid="logout-btn">
               <LogoutIcon />
             </IconButton>
           </Tooltip>

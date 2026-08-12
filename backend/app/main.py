@@ -33,6 +33,6 @@ app.include_router(user.router)
 app.include_router(push.router)
 
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 def health() -> dict[str, str]:
     return {"status": "ok"}

@@ -19,7 +19,11 @@ export function usePushSubscription() {
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
         throw new Error('Push notifications are not supported in this browser')
       }
-      await navigator.serviceWorker.register('/service-worker.js')
+      // service-worker.js is a static file, not processed by Vite, so it can't read
+      // import.meta.env directly -- pass the API base URL in via the registration
+      // query string, which the worker can read from self.location.search.
+      const apiBase = import.meta.env.VITE_API_BASE_URL || window.location.origin
+      await navigator.serviceWorker.register(`/service-worker.js?apiBase=${encodeURIComponent(apiBase)}`)
       // register() resolves once the service worker is queued, not once it's active --
       // pushManager.subscribe() requires an active worker, so wait for that specifically
       // (matters most on a first-ever visit, before any service worker has installed yet).

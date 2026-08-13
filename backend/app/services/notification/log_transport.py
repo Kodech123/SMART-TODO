@@ -10,10 +10,11 @@ class LogTransport(NotificationTransport):
 
     def send(self, subscription: dict, payload: NotificationPayload) -> NotificationResult:
         logger.info(
-            "[notification] endpoint=%s title=%r body=%r task_id=%s",
+            "[notification] endpoint=%s title=%r body=%r task_id=%s reminder_id=%s",
             subscription.get("endpoint"),
             payload.title,
             payload.body,
             payload.task_id,
+            payload.reminder_id,
         )
         return NotificationResult(success=True, detail="logged")

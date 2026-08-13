@@ -1,3 +1,5 @@
+import hashlib
+import hmac
 from datetime import datetime, timedelta, timezone
 
 import bcrypt
@@ -38,3 +40,19 @@ def decode_access_token(token: str) -> int:
     if subject is None:
         raise InvalidTokenError("Token missing subject")
     return int(subject)
+
+
+def sign_reminder_open_token(reminder_id: int) -> str:
+    """A service worker can't carry the user's JWT (no access to localStorage from that
+    context), but the "reminder opened" signal is a low-sensitivity analytics timestamp,
+    not something worth a full auth round trip. This HMAC just stops arbitrary reminder
+    IDs from being marked opened by anyone who guesses one -- it's delivered to the
+    client inside the push notification payload itself, alongside the reminder_id.
+    """
+    digest = hmac.new(settings.jwt_secret_key.encode("utf-8"), str(reminder_id).encode("utf-8"), hashlib.sha256)
+    return digest.hexdigest()
+
+
+def verify_reminder_open_token(reminder_id: int, token: str) -> bool:
+    expected = sign_reminder_open_token(reminder_id)
+    return hmac.compare_digest(expected, token)

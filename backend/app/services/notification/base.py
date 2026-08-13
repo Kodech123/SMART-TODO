@@ -7,6 +7,7 @@ class NotificationPayload:
     title: str
     body: str
     task_id: int
+    reminder_id: int
     icon: str = "/icon-192x192.png"
     badge: str = "/badge-72x72.png"
 

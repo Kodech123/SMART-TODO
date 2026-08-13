@@ -22,6 +22,7 @@ class Reminder(Base):
     job_id: Mapped[str] = mapped_column(String(100), nullable=False, unique=True, index=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="pending", server_default="pending")
     delivered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    opened_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     task: Mapped["Task"] = relationship(back_populates="reminders")

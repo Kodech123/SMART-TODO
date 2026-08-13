@@ -20,7 +20,14 @@ class ReminderListItem(BaseModel):
     task_title: str
     trigger_time: datetime
     status: str
+    delivered_at: datetime | None = None
+    opened_at: datetime | None = None
     time_until_delivery: str | None = None
+
+
+class ReminderOpenedResponse(BaseModel):
+    reminder_id: int
+    opened_at: datetime
 
 
 class ReminderListResponse(BaseModel):

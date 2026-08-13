@@ -4,17 +4,30 @@ import time
 from pywebpush import WebPushException, webpush
 
 from app.core.config import settings
+from app.core.security import sign_reminder_open_token
 from app.services.notification.base import NotificationPayload, NotificationResult, NotificationTransport
 
 
 class WebPushTransport(NotificationTransport):
     def send(self, subscription: dict, payload: NotificationPayload) -> NotificationResult:
+        if not subscription.get("endpoint"):
+            # No real push subscription to deliver to (e.g. the user hasn't granted
+            # notification permission yet). pywebpush needs the endpoint's origin to
+            # build the VAPID "aud" claim, so it can't attempt this at all -- fail
+            # gracefully instead of letting pywebpush raise past here.
+            return NotificationResult(success=False, detail="No push subscription endpoint")
+
         notification_data = {
             "title": payload.title,
             "body": payload.body,
             "icon": payload.icon,
             "badge": payload.badge,
-            "data": {"task_id": payload.task_id, "click_action": f"/tasks/{payload.task_id}"},
+            "data": {
+                "task_id": payload.task_id,
+                "reminder_id": payload.reminder_id,
+                "opened_token": sign_reminder_open_token(payload.reminder_id),
+                "click_action": f"/tasks/{payload.task_id}",
+            },
         }
         try:
             webpush(

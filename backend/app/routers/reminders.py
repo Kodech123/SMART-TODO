@@ -5,10 +5,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_current_user, get_db
+from app.core.security import verify_reminder_open_token
 from app.models.reminder import Reminder
 from app.models.task import Task
 from app.models.user import User
-from app.schemas.reminder import ReminderListItem, ReminderListResponse, SnoozeResponse
+from app.schemas.reminder import ReminderListItem, ReminderListResponse, ReminderOpenedResponse, SnoozeResponse
 from app.services.priority_engine import ensure_utc
 from app.services.reminder_service import snooze_reminder
 
@@ -50,11 +51,38 @@ def list_reminders(
             task_title=title,
             trigger_time=reminder.trigger_time,
             status=reminder.status,
+            delivered_at=reminder.delivered_at,
+            opened_at=reminder.opened_at,
             time_until_delivery=_format_time_until(reminder.trigger_time) if reminder.status == "pending" else None,
         )
         for reminder, title in rows
     ]
     return ReminderListResponse(reminders=reminders, total_count=total_count)
+
+
+@router.put("/{reminder_id}/opened", response_model=ReminderOpenedResponse)
+def mark_opened(
+    reminder_id: int,
+    token: str = Query(..., description="HMAC from the push notification payload, proves this client received it"),
+    db: Session = Depends(get_db),
+) -> ReminderOpenedResponse:
+    """Called by the service worker's notificationclick handler, which can't carry the
+    user's JWT (no localStorage access from that context) -- see
+    sign_reminder_open_token for why a per-reminder token is used instead of full auth.
+    """
+    if not verify_reminder_open_token(reminder_id, token):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid token")
+
+    reminder = db.get(Reminder, reminder_id)
+    if reminder is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reminder not found")
+
+    if reminder.opened_at is None:
+        reminder.opened_at = datetime.now(timezone.utc)
+        db.commit()
+        db.refresh(reminder)
+
+    return ReminderOpenedResponse(reminder_id=reminder.reminder_id, opened_at=reminder.opened_at)
 
 
 @router.get("/{reminder_id}/snooze", response_model=SnoozeResponse)

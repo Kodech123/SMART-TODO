@@ -38,12 +38,15 @@ def deliver_reminder(reminder_id: int) -> None:
             title=f"Task Reminder: {task.title}",
             body=f"Priority: {task.priority_label} | Due: {task.due_date.strftime('%Y-%m-%d %H:%M')}",
             task_id=task.task_id,
+            reminder_id=reminder.reminder_id,
         )
 
         subscriptions = user.push_subscriptions
         if not subscriptions:
             # No registered push endpoint yet; the log transport still records the attempt
-            # so the reminder pipeline is observable end-to-end in dev.
+            # so the reminder pipeline is observable end-to-end in dev. WebPushTransport
+            # must handle this {"endpoint": None} case gracefully itself (not crash) --
+            # see its own guard for why.
             result = transport.send({"endpoint": None}, payload)
         else:
             results = [
@@ -55,7 +58,8 @@ def deliver_reminder(reminder_id: int) -> None:
             result = next((r for r in results if r.success), results[0])
 
         reminder.status = "delivered" if result.success else "failed"
-        reminder.delivered_at = datetime.now(timezone.utc)
+        if result.success:
+            reminder.delivered_at = datetime.now(timezone.utc)
         db.commit()
     finally:
         db.close()

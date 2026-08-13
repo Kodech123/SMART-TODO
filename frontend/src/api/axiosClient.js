@@ -21,6 +21,17 @@ axiosClient.interceptors.response.use(
         window.location.assign('/login')
       }
     }
+
+    // FastAPI's error body is {"detail": "..."} for a single message (validation errors
+    // instead carry an array under `detail`, which isn't a useful .message string, so
+    // those are left as axios's generic "Request failed with status code NNN"). Without
+    // this, every consumer of these thunks' rejected.error.message sees that generic
+    // message instead of e.g. "Email already registered".
+    const detail = error.response?.data?.detail
+    if (typeof detail === 'string') {
+      error.message = detail
+    }
+
     return Promise.reject(error)
   },
 )

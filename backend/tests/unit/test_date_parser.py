@@ -26,6 +26,17 @@ def test_parses_tomorrow():
     assert used_fallback is False
 
 
+def test_parses_time_embedded_in_a_longer_phrase():
+    # dateparser.parse() requires the whole string to be a date expression, so text like
+    # "class by 9pm" -- a real time embedded alongside other words -- used to fail outright
+    # and silently fall back to seven days later. extract_due_date() now also tries
+    # dateparser's search_dates(), which extracts a date from within longer text.
+    due_date, used_fallback = extract_due_date("class by 9pm", now=NOW)
+    assert used_fallback is False
+    assert due_date.date() == NOW.date()
+    assert due_date.hour == 21
+
+
 def test_unparseable_text_falls_back_to_seven_days():
     due_date, used_fallback = extract_due_date("asdkjhaslkdjh not a date at all !!!", now=NOW)
     assert used_fallback is True

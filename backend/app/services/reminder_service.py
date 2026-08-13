@@ -39,7 +39,11 @@ def calculate_optimal_reminder_time(
     if reminder_time.hour < active_start_hour:
         reminder_time = reminder_time.replace(hour=active_start_hour, minute=0, second=0, microsecond=0)
     elif reminder_time.hour >= active_end_hour:
-        reminder_time = (reminder_time - timedelta(days=1)).replace(
+        # Clamp to just before closing time on the *same* calendar day. This datetime's
+        # date is already correct (Python normalizes the hour after arithmetic), so an
+        # extra day subtraction here would push the reminder a full day earlier than the
+        # offset table intends -- e.g. P4's "5 days before" silently becoming 6+ days.
+        reminder_time = reminder_time.replace(
             hour=max(active_end_hour - 1, active_start_hour), minute=0, second=0, microsecond=0
         )
 

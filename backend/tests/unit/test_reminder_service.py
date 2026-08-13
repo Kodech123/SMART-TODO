@@ -19,10 +19,12 @@ def test_reminder_before_active_hours_clamps_to_start():
     assert result == datetime(2026, 1, 18, 8, 0, tzinfo=timezone.utc)
 
 
-def test_reminder_after_active_hours_clamps_to_previous_day():
-    due_date = datetime(2026, 1, 20, 23, 0, tzinfo=timezone.utc)  # P1 offset: 1 day, 0 hours -> 23:00
+def test_reminder_after_active_hours_clamps_to_same_day():
+    due_date = datetime(2026, 1, 20, 23, 0, tzinfo=timezone.utc)  # P1 offset: 1 day, 0 hours -> Jan 19, 23:00
     result = calculate_optimal_reminder_time(due_date, "P1", ACTIVE_START, ACTIVE_END, now=EARLY_NOW)
-    assert result == datetime(2026, 1, 18, 21, 0, tzinfo=timezone.utc)
+    # 23:00 is past active_end (22:00), so clamp to just before closing -- on the *same*
+    # calendar day (Jan 19, still "1 day before"), not pushed back an extra day to Jan 18.
+    assert result == datetime(2026, 1, 19, 21, 0, tzinfo=timezone.utc)
 
 
 def test_near_term_due_date_does_not_schedule_a_reminder_in_the_past():

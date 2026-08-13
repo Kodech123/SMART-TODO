@@ -13,27 +13,23 @@ from app.services.priority_engine import ensure_utc
 
 logger = logging.getLogger("dosmart.reminders")
 
-# priority_label -> (days before due_date, hour-of-day target)
-_OFFSET_BY_LABEL: dict[str, tuple[int, int]] = {
-    "P1": (1, 0),
-    "P2": (2, 9),
-    "P3": (3, 14),
-    "P4": (5, 18),
-}
-
 
 def calculate_optimal_reminder_time(
     due_date: datetime,
-    priority_label: str,
+    default_reminder_minutes: int,
     active_hours_start: time,
     active_hours_end: time,
     *,
     now: datetime | None = None,
 ) -> datetime:
-    """Priority-tier offset before the deadline, clamped into the user's active hours."""
+    """The user's configured offset before the deadline, clamped into their active hours.
+
+    Priority (P1-P4) intentionally has no bearing on reminder timing -- it still drives
+    sorting, badges, and urgency scoring elsewhere, but every task reminds the same
+    fixed amount of time before its own due date, per the user's own setting.
+    """
     due_date = ensure_utc(due_date)
-    offset_days, offset_hours = _OFFSET_BY_LABEL[priority_label]
-    reminder_time = due_date - timedelta(days=offset_days, hours=offset_hours)
+    reminder_time = due_date - timedelta(minutes=default_reminder_minutes)
 
     active_start_hour, active_end_hour = active_hours_start.hour, active_hours_end.hour
     if reminder_time.hour < active_start_hour:
@@ -66,8 +62,8 @@ def _remove_job_if_exists(job_id: str) -> None:
 
 def create_pending_reminder(db: Session, task: Task, user: User) -> Reminder | None:
     """Create (and flush, to assign a PK) a pending Reminder row -- but do NOT register
-    its APScheduler job yet. Requires `task.task_id` and `task.priority_label` to already
-    be set, and returns None if the user opted out of notifications.
+    its APScheduler job yet. Requires `task.task_id` to already be set, and returns None
+    if the user opted out of notifications.
 
     Job registration is a separate step (register_reminder_job) that callers must run
     *after* committing: APScheduler's jobstore writes through its own connection, and
@@ -80,7 +76,7 @@ def create_pending_reminder(db: Session, task: Task, user: User) -> Reminder | N
         return None
 
     trigger_time = calculate_optimal_reminder_time(
-        task.due_date, task.priority_label, user.active_hours_start, user.active_hours_end
+        task.due_date, user.default_reminder_minutes, user.active_hours_start, user.active_hours_end
     )
 
     reminder = Reminder(

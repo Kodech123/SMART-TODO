@@ -27,8 +27,8 @@ This document describes the system as implemented (not aspirationally) as of 202
 │   - Weighted Priority Score (0-10), P1-P4 label                   │
 │                                                                   │
 │  Reminder & Notification Engine                                  │
-│   - reminder_service.py: optimal reminder time per priority tier, │
-│     clamped to the user's active hours                            │
+│   - reminder_service.py: due date minus the user's configured     │
+│     reminder offset, clamped to their active hours                │
 │   - scheduler/: APScheduler BackgroundScheduler, SQLAlchemy       │
 │     jobstore (persists jobs in the same DB, survives restarts)    │
 │   - services/notification/: pluggable transport (log for dev,     │
@@ -92,16 +92,9 @@ Every task response includes a `scores.breakdown` object with the human-readable
 
 ## Reminder & Notification Engine
 
-Reminder timing (`reminder_service.calculate_optimal_reminder_time`) is a fixed offset per priority tier, then clamped into the user's configured active hours (default 08:00-22:00):
+Reminder timing (`reminder_service.calculate_optimal_reminder_time`) is `due_date - user.default_reminder_minutes` (the "Default reminder offset" setting, 5-180 minutes, default 30), then clamped into the user's configured active hours (default 08:00-22:00). Priority (P1-P4) deliberately has no effect on reminder timing — every task reminds the same fixed amount of time before its own due date; priority still drives sorting, badges, and the score breakdown elsewhere.
 
-| Priority | Offset before due date | Target hour |
-|---|---|---|
-| P1 | 1 day | — (same time as due date, minus 1 day) |
-| P2 | 2 days | 09:00 |
-| P3 | 3 days | 14:00 |
-| P4 | 5 days | 18:00 |
-
-If the computed time falls outside active hours it's clamped to the boundary; if it would fall in the past (very-near-term due dates) it fires one minute from now instead of being silently dropped.
+If the computed time falls outside active hours it's clamped to the start/end boundary on the same day; if it would fall in the past (very-near-term due dates) it fires one minute from now instead of being silently dropped.
 
 Each reminder becomes a persistent APScheduler job (`SQLAlchemyJobStore`, stored in the same database, table `apscheduler_jobs`) so scheduled reminders survive an application restart. Completing or deleting a task cancels its pending reminder's job. Delivery goes through a pluggable `NotificationTransport`: `log` (prints to server log, used in dev/tests) or `webpush` (real Web Push via VAPID keys and `pywebpush`), selected by the `NOTIFICATION_TRANSPORT` env var.
 

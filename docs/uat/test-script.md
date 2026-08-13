@@ -4,6 +4,10 @@ For the facilitator to read/guide, and the participant to actually do, on their 
 
 Before starting: confirm the participant has completed the intake form (`participant-intake.md`) and the app is reachable at the test URL.
 
+## Step 0: prioritization accuracy (before they've seen the app)
+
+Run Part 1 of `prioritization-and-comparison.md` — the 6-task blind ranking — *before* the participant touches DoSmart at all. Doing it after they've seen the app's priority labels would anchor their judgment on what they just saw, defeating the point of measuring independent agreement.
+
 ## Scenario: a busy week
 
 *"Imagine it's the start of a new week. You have an assignment due soon, a study session to plan, and a few personal errands. Use DoSmart to get organized."*
@@ -30,4 +34,4 @@ Before starting: confirm the participant has completed the intake form (`partici
 
 ## Then: independent use
 
-From here the participant uses DoSmart for their own actual tasks for 4 weeks, unsupervised. At the end of that period: `sus-questionnaire.md` and `tam-questionnaire.md`.
+From here the participant uses DoSmart for their own actual tasks for 4 weeks, unsupervised. At the end of that period: `sus-questionnaire.md`, `tam-questionnaire.md`, and (for participants who named an existing tool on intake) Part 2 of `prioritization-and-comparison.md`.
